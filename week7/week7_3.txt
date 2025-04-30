@@ -1,0 +1,41 @@
+from collections import defaultdict, deque
+
+class Solution:
+    def numBusesToDestination(self, routes, source, target):
+        if source == target:
+            return 0
+
+        # 建立 bus stop -> route list 映射
+        stop_to_routes = defaultdict(set)
+        for i, route in enumerate(routes):
+            for stop in route:
+                stop_to_routes[stop].add(i)
+
+        visited_stops = set()
+        visited_routes = set()
+        queue = deque()
+        queue.append(source)
+        visited_stops.add(source)
+        buses_taken = 0
+
+        while queue:
+            buses_taken += 1
+            for _ in range(len(queue)):
+                stop = queue.popleft()
+
+                # 遍歷所有可以搭乘的 bus
+                for route_i in stop_to_routes[stop]:
+                    if route_i in visited_routes:
+                        continue
+                    visited_routes.add(route_i)
+
+                    # 看這班車經過哪些站
+                    for next_stop in routes[route_i]:
+                        if next_stop == target:
+                            return buses_taken
+                        if next_stop not in visited_stops:
+                            visited_stops.add(next_stop)
+                            queue.append(next_stop)
+
+        return -1
+

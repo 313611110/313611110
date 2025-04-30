@@ -1,0 +1,17 @@
+from typing import List
+
+class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        # 初始化 dp 陣列，大小為 amount + 1，預設為無限大
+        dp = [float('inf')] * (amount + 1)
+        dp[0] = 0  # 湊出 0 元需要 0 枚硬幣
+        
+        for i in range(1, amount + 1):
+            for coin in coins:
+                if i >= coin:
+                    dp[i] = min(dp[i], dp[i - coin] + 1)
+        
+        # 若無法湊出金額，回傳 -1
+        return dp[amount] if dp[amount] != float('inf') else -1
+
+
