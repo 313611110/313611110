@@ -1,0 +1,15 @@
+class Solution:
+    def paintWalls(self, cost, time):
+        n = len(cost)
+        INF = float('inf')
+        dp = [INF] * (n + 1)
+        dp[0] = 0  # 0 面牆的代價是 0
+
+        for i in range(n):
+            for j in range(n - 1, -1, -1):
+                new_j = min(n, j + time[i] + 1)
+                dp[new_j] = min(dp[new_j], dp[j] + cost[i])
+
+        return dp[n]
+
+
