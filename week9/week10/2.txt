@@ -1,0 +1,36 @@
+class Solution:
+    def findRedundantDirectedConnection(self, edges):
+        n = len(edges)
+        parent = [0] * (n + 1)
+        cand1 = cand2 = None
+
+        # Step 1: check whether there is a node with two parents
+        for u, v in edges:
+            if parent[v] == 0:
+                parent[v] = u
+            else:
+                # v already has a parent -> conflict
+                cand1 = [parent[v], v]
+                cand2 = [u, v]
+                break
+
+        # Step 2: Union-Find to detect cycle (skip cand2 if exists)
+        def find(x):
+            if uf[x] != x:
+                uf[x] = find(uf[x])
+            return uf[x]
+
+        uf = list(range(n + 1))
+
+        for u, v in edges:
+            if [u, v] == cand2:
+                continue  # skip the later edge if there’s a two-parent conflict
+            pu, pv = find(u), find(v)
+            if pu == pv:
+                # cycle detected
+                return cand1 if cand1 else [u, v]
+            uf[pv] = pu
+
+        # no cycle found, so cand2 is the redundant one
+        return cand2
+

@@ -1,0 +1,32 @@
+from collections import deque
+
+class Solution:
+    def shortestPathLength(self, graph):
+        n = len(graph)
+        if n == 1:
+            return 0
+
+        # (node, visited_mask)
+        queue = deque()
+        visited = [[False] * (1 << n) for _ in range(n)]
+
+        for i in range(n):
+            mask = 1 << i
+            queue.append((i, mask, 0))  # (node, visited_mask, steps)
+            visited[i][mask] = True
+
+        while queue:
+            node, mask, steps = queue.popleft()
+
+            # All nodes visited
+            if mask == (1 << n) - 1:
+                return steps
+
+            for neighbor in graph[node]:
+                next_mask = mask | (1 << neighbor)
+                if not visited[neighbor][next_mask]:
+                    visited[neighbor][next_mask] = True
+                    queue.append((neighbor, next_mask, steps + 1))
+
+        return -1  # should never reach here
+
