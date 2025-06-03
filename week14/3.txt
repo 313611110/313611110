@@ -1,0 +1,42 @@
+from bisect import bisect_left
+from sortedcontainers import SortedList
+
+class Solution:
+    def maxTaskAssign(self, tasks, workers, pills, strength):
+        tasks.sort()
+        workers.sort()
+
+        def can_assign(k):
+            t = tasks[:k]
+            w = SortedList(workers[-k:])
+            p = pills
+
+            for i in range(k - 1, -1, -1):
+                if w[-1] >= t[i]:
+                    w.pop()
+                    continue
+
+               
+                idx = w.bisect_left(t[i] - strength)
+                if idx == len(w) or p == 0:
+                    return False
+
+                w.pop(idx)
+                p -= 1
+
+            return True
+
+        # binary search on number of tasks
+        low, high = 0, min(len(tasks), len(workers))
+        ans = 0
+
+        while low <= high:
+            mid = (low + high) // 2
+            if can_assign(mid):
+                ans = mid
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        return ans
+
